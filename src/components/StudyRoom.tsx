@@ -48,6 +48,7 @@ export default function StudyRoom({ subjectId, refreshCounter, isDesigning, onEn
     }
     e.target.value = '';
   };
+  const [localCustomPersona, setLocalCustomPersona] = useState("");
   const [selectedFileForView, setSelectedFileForView] = useState<SubjectFile | null>(null);
   const [viewingUnits, setViewingUnits] = useState<Unit[]>([]);
   const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
@@ -111,6 +112,7 @@ export default function StudyRoom({ subjectId, refreshCounter, isDesigning, onEn
         dbService.getGalleries(subjectId)
       ]);
       setSubject(s);
+      if (s) setLocalCustomPersona(s.customPersona || "");
       setFiles(f);
       const hasG = g.length > 0;
       const hasL = f.some(x => x.type === 'lecture' || x.type === 'recording');
@@ -496,8 +498,9 @@ export default function StudyRoom({ subjectId, refreshCounter, isDesigning, onEn
               />
               {subject?.persona === 'custom' && (
                 <textarea
-                  value={subject.customPersona || ''}
-                  onChange={(e) => updateSubjectSetting({ customPersona: e.target.value })}
+                  value={localCustomPersona}
+                  onChange={(e) => setLocalCustomPersona(e.target.value)}
+                  onBlur={() => updateSubjectSetting({ customPersona: localCustomPersona })}
                   placeholder="예: 아주 엄격하고 질문이 많은 교수님처럼 말해줘."
                   className="w-full bg-[#111215] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500 outline-none transition-all mt-2"
                   rows={3}
